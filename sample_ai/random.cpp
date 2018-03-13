@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <unistd.h>
 
 enum class CellItem {
     EMPTY,
@@ -30,6 +31,8 @@ int main()
                 }
             }
         }
+
+        sleep(2);
 
         while (true) {
             int x = rand() % W, y = rand() % H;

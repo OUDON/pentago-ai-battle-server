@@ -21,6 +21,8 @@ class GameBoard
   end
   RotateDir.freeze
 
+  class InvalidMoveError < RuntimeError; end
+
   def initialize
     @cells = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE, CellItem::EMPTY) }
     @turn = 0

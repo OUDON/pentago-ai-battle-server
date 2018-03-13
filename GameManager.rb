@@ -5,6 +5,8 @@ require './GameBoard'
 class PlayerProcess
   attr_reader :name
 
+  class TimeLimitExceededError < RuntimeError; end
+
   def initialize(name, cmd)
     @name = name
     @stdin, @stdout, @stderr, @thread = Open3.popen3(cmd)
@@ -17,13 +19,14 @@ class PlayerProcess
 
   def communicate(game_info, time_limit)
     res, exec_time = nil, nil
+    timeout_val = time_limit * 1.1 / 1000.0
     begin
         writeline(game_info)
         start_at = Time.now
-        Timeout.timeout(time_limit) {
+        Timeout.timeout(timeout_val) {
           res = readline
         }
-        exec_time = Time.now - start_at
+        exec_time = ((Time.now - start_at) * 1000).to_i
     rescue Timeout::Error
       STDERR.puts "Player #{name}: Time Limit Exceeded (#{time_limit} sec)"
       Process.kill("KILL", @thread.pid)
@@ -54,8 +57,7 @@ end
 class GameManager
   BOARD_WIDTH  = 6
   BOARD_HEIGHT = 6
-  # TIME_LIMIT   = 5 * 60 * 1000 # (ms)
-  TIME_LIMIT   = 10 # (s)
+  TIME_LIMIT   = 60 * 1000 # (ms)
 
   private
   attr_reader :game_board, :players, :time_limits
@@ -65,6 +67,7 @@ class GameManager
     @players = players
     @time_limits = Array.new(2, TIME_LIMIT)
     @game_board = GameBoard.new
+    @in_progress = false
   end
 
   def start
@@ -77,12 +80,17 @@ class GameManager
 
       player.send_initial_info(init_info)
     end
+    @in_progress = true
   end
 
   def play
-    while game_board.in_progress?
+    while in_progress?
       play_turn
     end
+  end
+
+  def in_progress?
+    @in_progress && game_board.in_progress?
   end
 
   private
@@ -102,6 +110,13 @@ class GameManager
     STDERR.puts ""
 
     move, time = players[player_idx].communicate(game_info, time_limit)
+    time_limits[player_idx] -= time
+
+    if time_limits[player_idx] <= 0
+      game_end(player_idx^1, "Time Limit Exceeded")
+      return
+    end
+
     game_board.move(*move.split.map(&:to_i))
 
     STDOUT.puts <<~EOT
@@ -110,7 +125,11 @@ class GameManager
       #{game_board}
 
     EOT
+  end
 
+  def game_end(winner, reason)
+    puts "Winner: #{players[winner].name}"
+    @in_progress = false
   end
 end
 
