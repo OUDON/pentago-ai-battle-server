@@ -31,18 +31,14 @@ class GameBoard
   def move(put_x, put_y, rot_idx, rot_dir)
     put(put_x, put_y)
     winner = judge
-    if winner
-      return true, winner
-    end
+    return winner if winner
 
     rotate(rot_idx, rot_dir)
     winner = judge
-    if winner
-      return true, winner
-    end
+    return winner if winner
 
     next_turn
-    return true, nil
+    nil
   end
 
   def turn
@@ -84,19 +80,17 @@ class GameBoard
   end
 
   def put(x, y)
-    if cells[y][x] != CellItem::EMPTY
-      # TODO: Raise an error
-      return false
+    if !x.between?(0, BOARD_SIZE - 1) || !y.between?(0, BOARD_SIZE - 1) ||
+        cells[y][x] != CellItem::EMPTY
+      raise InvalidMoveError
     end
 
     cells[y][x] = turn_player
-    true
   end
 
   def rotate(idx, dir)
     if !idx.between?(0, 3)
-      # TODO: Raise an error
-      return false
+      raise InvalidMoveError
     end
 
     idx_x, idx_y = idx % 2, idx / 2
@@ -112,8 +106,7 @@ class GameBoard
     elsif dir == RotateDir::RIGHT
       tmp_cells = rotate_right(tmp_cells)
     else
-      # TODO: Raise an error
-      return false
+      raise InvalidMoveError
     end
 
     (0...BOARD_SIZE_HALF).each do |y|
@@ -121,7 +114,6 @@ class GameBoard
         cells[idx_y * BOARD_SIZE_HALF + y][idx_x * BOARD_SIZE_HALF + x] = tmp_cells[y][x]
       end
     end
-    true
   end
 
   def rotate_left(tmp_cells)

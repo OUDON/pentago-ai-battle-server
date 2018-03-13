@@ -28,10 +28,9 @@ class PlayerProcess
         }
         exec_time = ((Time.now - start_at) * 1000).to_i
     rescue Timeout::Error
-      STDERR.puts "Player #{name}: Time Limit Exceeded (#{time_limit} sec)"
       Process.kill("KILL", @thread.pid)
       close_pipes
-      # TODO: Raise an error
+      raise TimeLimitExceededError
     end
     [res, exec_time]
   end
@@ -95,8 +94,9 @@ class GameManager
 
   private
   def play_turn
-    turn       = game_board.turn
-    player_idx = game_board.turn_player_idx
+    turn        = game_board.turn
+    player_idx  = game_board.turn_player_idx
+    turn_player = players[player_idx]
 
     time_limit = time_limits[player_idx]
     game_info = <<~EOT
@@ -105,19 +105,27 @@ class GameManager
       #{game_board}
     EOT
 
-    STDERR.puts "Send the game informations to Player #{players[player_idx].name}"
+    STDERR.puts "Send the game informations to Player #{turn_player.name}"
     STDERR.puts game_info
     STDERR.puts ""
 
-    move, time = players[player_idx].communicate(game_info, time_limit)
-    time_limits[player_idx] -= time
-
-    if time_limits[player_idx] <= 0
+    begin
+      move, time = turn_player.communicate(game_info, time_limit)
+      time_limits[player_idx] -= time
+      raise PlayerProcess::TimeLimitExceededError if time_limits[player_idx] <= 0
+    rescue PlayerProcess::TimeLimitExceededError
+      STDERR.puts "Player #{turn_player.name}: Time Limit Exceeded"
       game_end(player_idx^1, "Time Limit Exceeded")
       return
     end
 
-    game_board.move(*move.split.map(&:to_i))
+    begin
+      winner = game_board.move(*move.split.map(&:to_i))
+    rescue GameBoard::InvalidMoveError
+      STDERR.puts "Player #{turn_player.name}: Invalid Move"
+      game_end(player_idx^1, "Invalid Move")
+      return
+    end
 
     STDOUT.puts <<~EOT
       Turn #{turn}: #{players[player_idx].name} [#{game_board.turn_player_symmbol}]
