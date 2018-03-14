@@ -26,6 +26,7 @@ class GameBoard
   def initialize
     @cells = Array.new(BOARD_SIZE) { Array.new(BOARD_SIZE, CellItem::EMPTY) }
     @turn = 0
+    @empty_cell_num = BOARD_SIZE * BOARD_SIZE
   end
 
   def move(put_x, put_y, rot_idx, rot_dir)
@@ -58,8 +59,8 @@ class GameBoard
   end
 
   def in_progress?
-    # TODO: Implement
-    true
+    winner = judge
+    @empty_cell_num > 0 && !winner
   end
 
   def to_s
@@ -86,6 +87,7 @@ class GameBoard
     end
 
     cells[y][x] = turn_player
+    @empty_cell_num -= 1
   end
 
   def rotate(idx, dir)
