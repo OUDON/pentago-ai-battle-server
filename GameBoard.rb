@@ -128,9 +128,7 @@ class GameBoard
     (0...BOARD_SIZE - TARGET_NUM).each do |y|
       (0...BOARD_SIZE - TARGET_NUM).each do |x|
         color = judge_at(x, y)
-        if color != nil
-          return color
-        end
+        return color if color != nil
       end
     end
 
@@ -150,14 +148,10 @@ class GameBoard
       (1...TARGET_NUM).each do |j|
         tx += dx[i]
         ty += dy[i]
-        if cells[ty][tx] != color
-          break
-        end
+        break if cells[ty][tx] != color
         cnt += 1
       end
-      if cnt == TARGET_NUM
-        return color
-      end
+      return color if cnt == TARGET_NUM
     end
 
     nil
