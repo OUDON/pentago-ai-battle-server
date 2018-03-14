@@ -28,11 +28,16 @@ class PlayerProcess
         }
         exec_time = ((Time.now - start_at) * 1000).to_i
     rescue Timeout::Error
-      Process.kill("KILL", @thread.pid)
-      close_pipes
+      self.exit
       raise TimeLimitExceededError
     end
     [res, exec_time]
+  end
+
+  def exit
+    STDERR.puts "Player #{name}'s process is killed"
+    Process.kill("KILL", @thread.pid)
+    close_pipes
   end
 
   private
@@ -92,6 +97,12 @@ class GameManager
     @in_progress && game_board.in_progress?
   end
 
+  def exit
+    @players.each do |player|
+      player.exit
+    end
+  end
+
   private
   def play_turn
     turn        = game_board.turn
@@ -149,4 +160,5 @@ if __FILE__ == $0
   )
   gm.start
   gm.play
+  gm.exit
 end
