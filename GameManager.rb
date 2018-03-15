@@ -126,7 +126,7 @@ class GameManager
       raise PlayerProcess::TimeLimitExceededError if time_limits[player_idx] <= 0
     rescue PlayerProcess::TimeLimitExceededError
       STDERR.puts "Player #{turn_player.name}: Time Limit Exceeded"
-      game_end(player_idx^1, "Time Limit Exceeded")
+      game_end(player_idx^1, "(Player #{turn_player.name}: Time Limit Exceeded)")
       return
     end
 
@@ -134,7 +134,7 @@ class GameManager
       winner = game_board.move(*move.split.map(&:to_i))
     rescue GameBoard::InvalidMoveError
       STDERR.puts "Player #{turn_player.name}: Invalid Move"
-      game_end(player_idx^1, "Invalid Move")
+      game_end(player_idx^1, "(Player #{turn_player.name}: Invalid Move)")
       return
     end
 
@@ -144,10 +144,15 @@ class GameManager
       #{game_board}
 
     EOT
+
+    if winner
+      game_end(turn_player, "(Player #{turn_player.name}: Got five stones in a row)")
+    end
   end
 
   def game_end(winner, reason)
-    puts "Winner: #{players[winner].name}"
+    puts "# Winner: #{players[winner].name}"
+    puts "# #{reason}"
     @in_progress = false
   end
 end
