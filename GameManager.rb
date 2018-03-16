@@ -105,11 +105,11 @@ class GameManager
 
   private
   def play_turn
-    turn        = game_board.turn
-    player_idx  = game_board.turn_player_idx
-    turn_player = players[player_idx]
+    turn             = game_board.turn
+    turn_player_idx  = game_board.turn_player_idx
+    turn_player      = players[turn_player_idx]
 
-    time_limit = time_limits[player_idx]
+    time_limit = time_limits[turn_player_idx]
     game_info = <<~EOT
       #{turn}
       #{time_limit}
@@ -122,11 +122,11 @@ class GameManager
 
     begin
       move, time = turn_player.communicate(game_info, time_limit)
-      time_limits[player_idx] -= time
-      raise PlayerProcess::TimeLimitExceededError if time_limits[player_idx] <= 0
+      time_limits[turn_player_idx] -= time
+      raise PlayerProcess::TimeLimitExceededError if time_limits[turn_player_idx] <= 0
     rescue PlayerProcess::TimeLimitExceededError
       STDERR.puts "Player #{turn_player.name}: Time Limit Exceeded"
-      game_end(player_idx^1, "(Player #{turn_player.name}: Time Limit Exceeded)")
+      game_end(turn_player_idx^1, "(Player #{turn_player.name}: Time Limit Exceeded)")
       return
     end
 
@@ -134,19 +134,19 @@ class GameManager
       winner = game_board.move(*move.split.map(&:to_i))
     rescue GameBoard::InvalidMoveError
       STDERR.puts "Player #{turn_player.name}: Invalid Move"
-      game_end(player_idx^1, "(Player #{turn_player.name}: Invalid Move)")
+      game_end(turn_player_idx^1, "(Player #{turn_player.name}: Invalid Move)")
       return
     end
 
     STDOUT.puts <<~EOT
-      Turn #{turn}: #{players[player_idx].name} [#{game_board.turn_player_symmbol}]
+      Turn #{turn}: #{players[turn_player_idx].name} [#{game_board.turn_player_symmbol}]
       Move: #{move.chomp}
       #{game_board}
 
     EOT
 
     if winner
-      game_end(turn_player, "(Player #{turn_player.name}: Got five stones in a row)")
+      game_end(turn_player_idx, "(Player #{turn_player.name}: Got five stones in a row)")
     end
   end
 

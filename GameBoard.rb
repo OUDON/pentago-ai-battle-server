@@ -81,11 +81,7 @@ class GameBoard
   end
 
   def put(x, y)
-    if !x.between?(0, BOARD_SIZE - 1) || !y.between?(0, BOARD_SIZE - 1) ||
-        cells[y][x] != CellItem::EMPTY
-      raise InvalidMoveError
-    end
-
+    raise InvalidMoveError if !valid_point?(x, y) || cells[y][x] != CellItem::EMPTY
     cells[y][x] = turn_player
     @empty_cell_num -= 1
   end
@@ -127,8 +123,8 @@ class GameBoard
   end
 
   def judge
-    (0...BOARD_SIZE - TARGET_NUM).each do |y|
-      (0...BOARD_SIZE - TARGET_NUM).each do |x|
+    (0..(BOARD_SIZE - TARGET_NUM)).each do |y|
+      (0..(BOARD_SIZE - TARGET_NUM)).each do |x|
         color = judge_at(x, y)
         return color if color != nil
       end
@@ -143,20 +139,24 @@ class GameBoard
     end
 
     color = cells[y][x]
-    dx, dy = [1, 0, 1], [0, 1, 1]
-    (0..2).each do |i|
+    dxs, dys = [1, 0, 1], [0, 1, 1]
+    dxs.zip(dys).each do |dx, dy|
       cnt = 1
       tx, ty = x, y
-      (1...TARGET_NUM).each do |j|
-        tx += dx[i]
-        ty += dy[i]
-        break if cells[ty][tx] != color
+      (1..TARGET_NUM).each do
+        tx += dx
+        ty += dy
+        break if !valid_point?(tx, ty) || cells[ty][tx] != color
         cnt += 1
       end
       return color if cnt == TARGET_NUM
     end
 
     nil
+  end
+
+  def valid_point?(x, y)
+    x.between?(0, BOARD_SIZE-1) && y.between?(0, BOARD_SIZE-1)
   end
 end
 
@@ -167,15 +167,16 @@ if __FILE__ == $0
     board.dump
 
     put_x, put_y, rot_idx, rot_dir = gets.split.map(&:to_i)
-    if put_x && put_y && rot_idx && rot_dir
-      _, winner = board.move(put_x, put_y, rot_idx, rot_dir)
+    begin
+      winner = board.move(put_x, put_y, rot_idx, rot_dir)
+    rescue GameBoard::InvalidMoveError
+      puts "Invalid input."
+    ensure
       if winner
         board.dump
         puts "Player #{winner} win!"
         break
       end
-    else
-      puts "Invalid input."
     end
   end
 
