@@ -5,6 +5,32 @@
 Pentago AI Battle Server is a tool for running AI battle of Pentago.
 The tool communicates with the AI agents via stdin and stdout.
 
+## Usage
+### Write your AI client
+Write your AI client and make the executable.
+
+For example, use sample AI clinet `sample_ai/random.cpp` and compile it:
+
+``` sh
+g++ ./sample_ai/randome.cpp -o ai_sample.out
+```
+
+### Run the serever program
+To execute ai battle, use the following command:
+
+```
+ruby pentago_battle.rb NAME1 CMD1 NAME2 CMD2
+```
+
+`NAME1` is the first player's name, `CMD1` is the command to execute the first player's AI client,
+`NAME2` is the second player's name and `CMD2` is the command to execute the second player's AI client.
+
+For example,
+
+```
+ruby pentago_battle.rb Alice ./ai_sample.out Bob ./ai_sample.out
+```
+
 ## Rules of the Game
 Pentago is played on a 6x6 board composed of four 3x3 sub-boards.
 Two players alternate turns.
