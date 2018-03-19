@@ -19,16 +19,24 @@ g++ ./sample_ai/randome.cpp -o ai_sample.out
 To execute AI battle, use the following command:
 
 ```
-ruby pentago_battle.rb NAME1 CMD1 NAME2 CMD2
+ruby pentago_battle.rb [options] NAME1 CMD1 NAME2 CMD2
 ```
 
-`NAME1` is the first player's name, `CMD1` is the command to execute the first player's AI client,
-`NAME2` is the second player's name and `CMD2` is the command to execute the second player's AI client.
+#### Required Arguments
 
-For example,
+- `NAME1`: the first player's name
+- `CMD1`:  the command to execute the first player's AI client
+- `NAME2`: the second player's name
+- `CMD2`:  the command to execute the second player's AI client
+
+#### Optional Arguments
+
+- `-t`, `--time`: Muximum time to compute (ms)
+
+#### Example
 
 ```
-ruby pentago_battle.rb Alice ./ai_sample.out Bob ./ai_sample.out
+ruby pentago_battle.rb --time 60000 Alice ./ai_sample.out Bob ./ai_sample.out
 ```
 
 ## Rules of the Game

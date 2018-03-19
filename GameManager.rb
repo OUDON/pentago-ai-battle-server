@@ -61,15 +61,15 @@ end
 class GameManager
   BOARD_WIDTH  = 6
   BOARD_HEIGHT = 6
-  TIME_LIMIT   = 60 * 1000 # (ms)
 
   private
-  attr_reader :game_board, :players, :time_limits
+  attr_reader :game_board, :players, :time_limit_max, :time_limits
 
   public
-  def initialize(players)
+  def initialize(players, args)
     @players = players
-    @time_limits = Array.new(2, TIME_LIMIT)
+    @time_limit_max = args.fetch(:time_limit, 60 * 1000) # (ms)
+    @time_limits = Array.new(2, time_limit_max)
     @game_board = GameBoard.new
     @in_progress = false
   end
