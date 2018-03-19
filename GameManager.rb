@@ -130,17 +130,18 @@ class GameManager
       return
     end
 
+    move = move.chomp
     begin
       winner = game_board.move(*move.split.map(&:to_i))
     rescue GameBoard::InvalidMoveError
       STDERR.puts "Player #{turn_player.name}: Invalid Move"
-      game_end(turn_player_idx^1, "(Player #{turn_player.name}: Invalid Move)")
+      game_end(turn_player_idx^1, "(Player #{turn_player.name}: Invalid Move \"#{move}\")")
       return
     end
 
     STDOUT.puts <<~EOT
       Turn #{turn}: #{players[turn_player_idx].name} [#{game_board.turn_player_symmbol}]
-      Move: #{move.chomp}
+      Move: #{move}
       #{game_board}
 
     EOT
