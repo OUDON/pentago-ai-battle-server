@@ -31,7 +31,7 @@ ruby pentago_battle.rb [options] NAME1 CMD1 NAME2 CMD2
 
 #### Optional Arguments
 
-- `-t`, `--time`: Muximum time to compute (ms)
+- `-t`, `--time`: Maximum time to compute (ms)
 
 #### Example
 
