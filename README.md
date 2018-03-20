@@ -82,4 +82,4 @@ And if `cell(x, y)` is 'x', it means that the second player's stone is placed on
 ```
 
 ## License
-This software is released under the MIT License.
+This software is released under the MIT License, see LICENSE.txt.
