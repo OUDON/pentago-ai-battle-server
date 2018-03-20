@@ -32,6 +32,7 @@ ruby pentago_battle.rb [options] NAME1 CMD1 NAME2 CMD2
 #### Optional Arguments
 
 - `-t`, `--time`: Maximum time to compute (ms)
+- `--log` : Logging a battle to the FILE. If this option is omitted, logging to STDOUT.
 
 #### Example
 
@@ -77,6 +78,7 @@ If `cell(x, y)` is 'o', it means that the first player's stone is placed on the 
 And if `cell(x, y)` is 'x', it means that the second player's stone is placed on the cell.
 
 #### Output for one game turn
+
 ```
 [ put_x ] [ put_y ] [ rotate_idx ] [ rotate_direction ]
 ```

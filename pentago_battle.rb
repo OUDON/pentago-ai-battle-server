@@ -14,7 +14,8 @@ def argparse
       "options:",
     ].join("\n")
 
-    opts.on("-t", "--time TIME", "Muximum time to compute (ms)") { |arg| args[:time_limit] = arg.to_i }
+    opts.on("-t", "--time TIME", "Muximum time to compute (ms)") { |val| args[:time_limit] = val.to_i }
+    opts.on("--log FILE", "Logging a battle to the FILE (default: STDOUT)") { |val| args[:log] = val.to_s }
 
     begin
       opts.parse!
@@ -32,6 +33,8 @@ def main
     STDERR.puts opts
     exit(1)
   end
+
+  STDERR.puts "#{args}"
 
   gm = GameManager.new(
     [PlayerProcess.new(ARGV[0], ARGV[1]), PlayerProcess.new(ARGV[2], ARGV[3])],

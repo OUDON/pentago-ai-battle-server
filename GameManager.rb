@@ -63,7 +63,7 @@ class GameManager
   BOARD_HEIGHT = 6
 
   private
-  attr_reader :game_board, :players, :time_limit_max, :time_limits
+  attr_reader :game_board, :players, :time_limit_max, :time_limits, :logger
 
   public
   def initialize(players, args)
@@ -72,9 +72,23 @@ class GameManager
     @time_limits = Array.new(2, time_limit_max)
     @game_board = GameBoard.new
     @in_progress = false
+
+    if args[:log]
+      @logger = File.open(args[:log], "w")
+    else
+      @logger = STDOUT
+    end
   end
 
   def start
+    logger.puts <<~EOT
+      # Battle Information
+      Player1: #{players[0].name}
+      Player2: #{players[1].name}
+      Time:    #{time_limit_max}
+
+    EOT
+
     @players.each_with_index do |player, i|
       init_info = [BOARD_WIDTH, BOARD_HEIGHT, i].join("\n")
 
@@ -88,6 +102,9 @@ class GameManager
   end
 
   def play
+    logger.puts "# Battle Log"
+    @move_history = []
+
     while in_progress?
       play_turn
     end
@@ -131,6 +148,7 @@ class GameManager
     end
 
     move = move.chomp
+    @move_history << move
     begin
       winner = game_board.move(*move.split.map(&:to_i))
     rescue GameBoard::InvalidMoveError
@@ -139,7 +157,7 @@ class GameManager
       return
     end
 
-    STDOUT.puts <<~EOT
+    logger.puts <<~EOT
       Turn #{turn}: #{players[turn_player_idx].name} [#{game_board.turn_player_symmbol}]
       Move: #{move}
       #{game_board}
@@ -152,8 +170,15 @@ class GameManager
   end
 
   def game_end(winner, reason)
-    puts "# Winner: #{players[winner].name}"
-    puts "# #{reason}"
+    logger.puts <<~EOT
+      # Moves
+      #{@move_history.join("\n")}
+
+      # Result
+      Winner: #{players[winner].name}
+      #{reason}
+    EOT
+
     @in_progress = false
   end
 end
