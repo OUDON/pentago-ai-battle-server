@@ -190,6 +190,11 @@ if __FILE__ == $0
      PlayerProcess.new("Bob",   "./ai_sample.out")]
   )
   gm.start
-  gm.play
+  begin
+    gm.play
+  rescue Interrupt
+    gm.exit
+    exit(1)
+  end
   gm.exit
 end

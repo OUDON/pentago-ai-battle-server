@@ -41,7 +41,13 @@ def main
     args
   )
   gm.start
-  gm.play
+  begin
+    gm.play
+  rescue Interrupt
+    gm.exit
+    exit(1)
+  end
+
   gm.exit
 end
 
