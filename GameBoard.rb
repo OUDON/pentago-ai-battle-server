@@ -123,8 +123,8 @@ class GameBoard
   end
 
   def judge
-    (0..(BOARD_SIZE - TARGET_NUM)).each do |y|
-      (0..(BOARD_SIZE - TARGET_NUM)).each do |x|
+    (0...BOARD_SIZE).each do |y|
+      (0...BOARD_SIZE).each do |x|
         color = judge_at(x, y)
         return color if color != nil
       end
