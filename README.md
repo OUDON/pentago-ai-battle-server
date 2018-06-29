@@ -83,5 +83,33 @@ And if `cell(x, y)` is 'x', it means that the second player's stone is placed on
 [ put_x ] [ put_y ] [ rotate_idx ] [ rotate_direction ]
 ```
 
+#### Example
+Here is an example of initialize input for the first player:
+
+```
+6
+6
+0
+```
+
+Here is an example of input for one gmae turn:
+
+```
+9
+9295
+------
+-x-xox
+x---o-
+------
+----oo
+------
+```
+
+Here is an exmaple of output for one game turn:
+
+```
+3 4 3 1
+```
+
 ## License
 This software is released under the MIT License, see LICENSE.txt.
