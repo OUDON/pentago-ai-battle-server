@@ -32,7 +32,7 @@ ruby pentago_battle.rb [options] NAME1 CMD1 NAME2 CMD2
 #### Optional Arguments
 
 - `-t`, `--time`: Maximum time to compute (ms)
-- `--log` : Logging a battle to the FILE. If this option is omitted, logging to STDOUT.
+- `--log FILE` : Logging a battle to the FILE. If this option is omitted, logging to STDOUT.
 
 #### Example
 
