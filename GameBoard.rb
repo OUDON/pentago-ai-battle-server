@@ -1,25 +1,37 @@
+require "set"
+
 class GameBoard
   attr_reader :cells
   
   BOARD_SIZE = 6
   BOARD_SIZE_HALF = BOARD_SIZE / 2
   TARGET_NUM = 5
+
   module CellItem 
     EMPTY = 0
     BLACK = 1
     WHITE = 2
   end
   CellItem.freeze
+
   CELL_ITEM_SYMBOLS = {
     CellItem::EMPTY => "-",
     CellItem::BLACK => "o",
     CellItem::WHITE => "x",
   }.freeze
+
   module RotateDir
     LEFT  = 0
     RIGHT = 1
   end
   RotateDir.freeze
+
+  module Result
+    DRAW      = 0
+    WIN_BLACK = 1
+    WIN_WHITE = 2
+  end
+  Result.freeze
 
   class InvalidMoveError < RuntimeError; end
 
@@ -123,14 +135,23 @@ class GameBoard
   end
 
   def judge
+    winners = Set.new
+    filled  = true
     (0...BOARD_SIZE).each do |y|
       (0...BOARD_SIZE).each do |x|
+        filled = false if cells[y][x] == CellItem::EMPTY
         color = judge_at(x, y)
-        return color if color != nil
+        winners.add(color) if color != nil
       end
     end
 
-    nil
+    if winners.size == 1
+      return winners.to_a[0]
+    elsif winners.size == 2 || filled
+      return Result::DRAW
+    else
+      return nil
+    end
   end
 
   def judge_at(x, y)

@@ -150,7 +150,7 @@ class GameManager
     move = move.chomp
     @move_history << move
     begin
-      winner = game_board.move(*move.split.map(&:to_i))
+      result = game_board.move(*move.split.map(&:to_i))
     rescue GameBoard::InvalidMoveError
       STDERR.puts "Player #{turn_player.name}: Invalid Move"
       game_end(turn_player_idx^1, "(Player #{turn_player.name}: Invalid Move \"#{move}\")")
@@ -164,8 +164,13 @@ class GameManager
 
     EOT
 
-    if winner
-      game_end(turn_player_idx, "(Player #{turn_player.name}: Got five stones in a row)")
+    if result
+      if result == GameBoard::Result::DRAW
+        game_end(-1, "Draw")
+      else
+        winner = result-1
+        game_end(winner, "(Player #{players[winner].name}: Got five stones in a row)")
+      end
     end
   end
 
@@ -174,11 +179,20 @@ class GameManager
       # Moves
       #{@move_history.join("\n")}
 
-      # Result
-      Winner: #{players[winner].name}
-      #{reason}
     EOT
 
+    if winner != -1
+      logger.puts <<~EOT
+        # Result
+        Winner: #{players[winner].name}
+        #{reason}
+      EOT
+    else
+      logger.puts <<~EOT
+        #Result
+        Draw
+      EOT
+    end
     @in_progress = false
   end
 end
