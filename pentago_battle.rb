@@ -34,8 +34,6 @@ def main
     exit(1)
   end
 
-  STDERR.puts "#{args}"
-
   gm = GameManager.new(
     [PlayerProcess.new(ARGV[0], ARGV[1]), PlayerProcess.new(ARGV[2], ARGV[3])],
     args
