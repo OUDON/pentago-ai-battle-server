@@ -160,7 +160,7 @@ class GameBoard
     end
 
     color = cells[y][x]
-    dxs, dys = [1, 0, 1], [0, 1, 1]
+    dxs, dys = [1, 0, 1, -1], [0, 1, 1, 1]
     dxs.zip(dys).each do |dx, dy|
       cnt = 1
       tx, ty = x, y
