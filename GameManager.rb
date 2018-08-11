@@ -1,6 +1,6 @@
 require 'open3'
 require 'timeout'
-require './GameBoard'
+require_relative './GameBoard'
 
 class PlayerProcess
   attr_reader :name

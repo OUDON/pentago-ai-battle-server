@@ -1,4 +1,4 @@
-require './GameManager'
+require_relative './GameManager'
 
 def argparse
   require 'optparse'
