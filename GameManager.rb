@@ -35,9 +35,13 @@ class PlayerProcess
   end
 
   def exit
-    STDERR.puts "Player #{name}'s process is killed"
-    Process.kill("KILL", @thread.pid)
-    close_pipes
+    begin
+      STDERR.puts "Kill the Player #{name}'s process"
+      Process.kill("KILL", @thread.pid)
+      close_pipes
+    rescue Errno::ESRCH
+      STDERR.puts "The process is already killed"
+    end
   end
 
   private
